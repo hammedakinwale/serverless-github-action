@@ -7,7 +7,7 @@ import junit.framework.TestSuite;
 /**
  * Unit test for simple App.
  */
-public class HandlerStringTest
+public class HandlerString
     extends TestCase
 {
     /**
@@ -15,7 +15,7 @@ public class HandlerStringTest
      *
      * @param testName name of the test case
      */
-    public HandlerStringTest(String testName )
+    public HandlerString(String testName )
     {
         super( testName );
     }
@@ -25,7 +25,7 @@ public class HandlerStringTest
      */
     public static Test suite()
     {
-        return new TestSuite( HandlerStringTest.class );
+        return new TestSuite( HandlerString.class );
     }
 
     /**
