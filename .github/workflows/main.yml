@@ -1,4 +1,4 @@
-name: AWS Lambda pipeline
+name: AWS Lambda CICD
 on:
   push:
     branches: [main]
@@ -8,28 +8,25 @@ jobs:
     steps:
       - name: Code Checkout
         uses: actions/checkout@v3
-      - name: Java Setup
+      - name: Setup Java
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: Building Project
+      - name: Build Project
         run: mvn clean install
-      - name: Configuring AWS Credentials
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
           aws-access-key-id: ${{ secrets.LAMBDA_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.LAMBDA_SECRET_KEY }}
-          aws-region: us-east-1
-      - name: Creating AWS Lambda Function
+          aws-region: eu-north-1
+      - name: Create AWS Lambda Function
         run: |
-          aws lambda create-function --function-name serverless --runtime java17
-          --handler integration.ninjas.HandlerString::handleRequest
-          --role arn:aws:iam::533267152024:role/lambda-perm --zip-file fileb://target/lambda-basic-1.0-SNAPSHOT.jar
+          aws lambda create-function --function-name HandlerString --runtime java17 --handler integration.ninjas.HandlerString::handleRequest --role arn:aws:iam::533267152024:role/lambda-perm --zip-file fileb://target/lambda-basic-1.0-SNAPSHOT.jar
         continue-on-error: true  
-      - name: Updating Lambda Function    
-        run: aws lambda update-function-code
-        --function-name HandlerString --zip-file fileb://target/lambda-basic-1.0-SNAPSHOT.jar
+      - name: Update Lambda Function    
+        run: aws lambda update-function-code --function-name HandlerString --zip-file fileb://target/lambda-basic-1.0-SNAPSHOT.jar
           
       
     
