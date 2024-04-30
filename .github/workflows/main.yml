@@ -1,0 +1,35 @@
+name: AWS Lambda pipeline
+on:
+  push:
+    branches: [main]
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v3
+      - name: Java Setup
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Building Project
+        run: mvn clean install
+      - name: Configuring AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.LAMBDA_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.LAMBDA_SECRET_KEY }}
+          aws-region: us-east-1
+      - name: Creating AWS Lambda Function
+        run: |
+          aws lambda create-function --function-name serverless --runtime java17
+          --handler integration.ninjas.HandlerString::handleRequest
+          --role arn:aws:iam::533267152024:role/lambda-perm --zip-file fileb://target/lambda-basic-1.0-SNAPSHOT.jar
+        continue-on-error: true  
+      - name: Updating Lambda Function    
+        run: aws lambda update-function-code
+        --function-name serverless --zip-file fileb://target/lambda-basic-1.0-SNAPSHOT.jar
+          
+      
+    
